@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HealthCure - Covid-19</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-image: url("https://images.unsplash.com/photo-1584036561566-7b8e1218ee48");
+      background-repeat: no-repeat;
+      background-size: cover;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
+    .navbar {
+      background-color: #111 !important;
+    }
+    .navbar-brand {
+      color: #fff !important;
+      font-weight: bold;
+    }
+    .nav-link {
+      color: #bbb !important;
+    }
+    .nav-link:hover {
+      color: #fff !important;
+    }
+    footer {
+      background-color: #111;
+      text-align: center;
+      padding: 15px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      color: #888;
+    }
+    .error-msg {
+      color: #ff6666;
+      font-size: 13px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">HealthCure</a>
+
+    <div class="ml-auto">
+      <a href="{{ url_for('main') }}" 
+         class="btn btn-primary"
+         style="background-color: #0077b6; border: none;">
+         Back to Home
+      </a>
+    </div>
+  </nav>
+
+  <div class="container-fluid" style="background: url('/static/covid-bg.png') center center/cover no-repeat; min-height: 100vh; padding: 40px;">
+    <div class="row justify-content-center">
+      <div class="col-md-6" style="background-color: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
+        <h2 class="text-center mb-4">Covid-19 Detection</h2>
+        <form method="POST" action="/covid19" enctype="multipart/form-data">
+
+          <!-- Name Fields -->
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Firstname</label>
+              <input type="text" class="form-control" name="firstname" placeholder="Enter your first name"  value="{{ firstname or '' }}" required>
+              <small class="error-msg" id="fname-error">⚠️ Only alphabets allowed.</small>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Lastname</label>
+              <input type="text" class="form-control" name="lastname" placeholder="Enter your last name" value="{{ lastname or '' }}" required>
+              <small class="error-msg" id="lname-error">⚠️ Only alphabets allowed.</small>
+            </div>
+          </div>
+
+          <!-- Contact Info -->
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Phone No.</label>
+              <input type="text" class="form-control" name="phone_no" placeholder="Enter 10-digit phone number" maxlength="10" value="{{ phone_no or '' }}" required>
+              <small class="error-msg" id="phone-error">⚠️ Phone number must be 10 digits.</small>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Email</label>
+              <input type="email" class="form-control" name="email" placeholder="example@mail.com" value="{{ email or '' }}" required pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}">
+              <small class="error-msg" id="email-error">⚠️ Please enter a valid email address.</small>
+            </div>
+          </div>
+
+          <!-- Age & Gender -->
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Age</label>
+              <input type="number" class="form-control" name="age" placeholder="Enter your age (1–120)" min="1" max="120" value="{{ age or '' }}" required>
+              <small class="error-msg" id="age-error">⚠️ Age must be between 1 and 120.</small>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Gender</label>
+              <select class="form-control" name="gender" required>
+                <option value="" disabled {{ 'selected' if not gender }}>Select your gender</option>
+                <option value="Male" {{ 'selected' if gender=='Male' }}>Male</option>
+                <option value="Female" {{ 'selected' if gender=='Female' }}>Female</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Symptoms & Risk Factors -->
+          <div class="form-row">
+            {% for field, label in [
+              ('Breathing Problem','Breathing Problem'),
+              ('Fever','Fever'),
+              ('Dry Cough','Dry Cough'),
+              ('Sore throat','Sore Throat'),
+              ('Running Nose','Running Nose'),
+              ('Asthma','Asthma'),
+              ('Chronic Lung Disease','Chronic Lung Disease'),
+              ('Headache','Headache'),
+              ('Heart Disease','Heart Disease'),
+              ('Diabetes','Diabetes'),
+              ('Hyper Tension','Hyper Tension'),
+              ('Fatigue','Fatigue'),
+              ('Gastrointestinal','Gastrointestinal'),
+              ('Abroad travel','Abroad Travel'),
+              ('Contact with COVID Patient','Contact with COVID Patient'),
+              ('Attended Large Gathering','Attended Large Gathering'),
+              ('Visited Public Exposed Places','Visited Public Exposed Places'),
+              ('Family working in Public Exposed Places','Family Working in Public Exposed Places'),
+              ('Wearing Masks','Wearing Masks'),
+              ('Sanitization from Market','Sanitization from Market')
+            ] %}
+              <div class="form-group col-md-6">
+                <label>{{ label }}</label>
+                <select class="form-control" name="{{ field }}" required>
+                  <option value="" disabled {% if user_features[field] == '' %}selected{% endif %}>Select</option>
+                  <option value="0" {% if user_features[field] == 0 %}selected{% endif %}>No</option>
+                  <option value="1" {% if user_features[field] == 1 %}selected{% endif %}>Yes</option>
+                </select>
+              </div>
+            {% endfor %}
+          </div>
+
+          <button type="submit" class="btn btn-success btn-block mt-4">Submit</button>
+        </form>
+
+        {% if prediction %}
+          <div class="mt-4 p-3 text-center" style="background-color: rgba(0,0,0,0.7); border-radius: 10px;">
+            <h4 style="background-color: #444; padding: 10px; margin: -20px -20px 20px -20px; border-radius: 10px 10px 0 0;">
+              Covid-19 Test Results
+            </h4>
+            <div class="row">
+              <div class="col-md-4">
+                <img src="/static/covid-bg.png" alt="Covid Icon" style="max-width: 100%; height: auto;">
+              </div>
+              <div class="col-md-8 text-left">
+                <p><strong>First Name:</strong> {{ firstname }}</p>
+                <p><strong>Last Name:</strong> {{ lastname }}</p>
+                <p><strong>Age:</strong> {{ age }}</p>
+                <p><strong>Gender:</strong> {{ gender }}</p>
+                <p><strong>Result:</strong> <span style="font-weight: bold;">{{ prediction }}</span></p>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="alert alert-danger mt-3" role="alert">
+              {% for message in messages %}
+                {{ message }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    const fname = document.querySelector('input[name="firstname"]');
+    const lname = document.querySelector('input[name="lastname"]');
+    const fnameError = document.getElementById('fname-error');
+    const lnameError = document.getElementById('lname-error');
+
+    fname.addEventListener('input', () => {
+      if (!/^[A-Za-z]*$/.test(fname.value)) {
+        fnameError.style.display = 'block';
+        fname.value = fname.value.replace(/[^A-Za-z]/g, '');
+      } else { fnameError.style.display = 'none'; }
+    });
+
+    lname.addEventListener('input', () => {
+      if (!/^[A-Za-z]*$/.test(lname.value)) {
+        lnameError.style.display = 'block';
+        lname.value = lname.value.replace(/[^A-Za-z]/g, '');
+      } else { lnameError.style.display = 'none'; }
+    });
+
+    const phone = document.querySelector('input[name="phone_no"]');
+    const phoneError = document.getElementById('phone-error');
+
+    phone.addEventListener('input', () => {
+      phone.value = phone.value.replace(/[^0-9]/g, '');
+      if (phone.value.length !== 10) phoneError.style.display = 'block';
+      else phoneError.style.display = 'none';
+    });
+
+    const email = document.querySelector('input[name="email"]');
+    const emailError = document.getElementById('email-error');
+
+    email.addEventListener('input', () => {
+      const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!pattern.test(email.value)) emailError.style.display = 'block';
+      else emailError.style.display = 'none';
+    });
+
+    const ageInput = document.querySelector('input[name="age"]');
+    const ageError = document.getElementById('age-error');
+
+    ageInput.addEventListener('input', () => {
+      ageInput.value = ageInput.value.replace(/[^0-9]/g, '');
+      const value = parseInt(ageInput.value);
+      if (!value || value < 1 || value > 120) ageError.style.display = 'block';
+      else ageError.style.display = 'none';
+    });
+  </script>
+
+  <script>
+    window.addEventListener("load", function () {
+      if (performance.navigation.type === 1) { 
+        const resultSection = document.querySelector(".mt-4.p-3.text-center");
+        if (resultSection) resultSection.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>

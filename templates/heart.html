@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HealthCure - Heart Disease</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-image: url("https://www.metropolisindia.com/upgrade/blog/upload/2023/04/Heart-Diseases.jpg");
+      background-repeat: no-repeat;
+      background-size: cover;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
+    .navbar {
+      background-color: #111 !important;
+    }
+    .navbar-brand {
+      color: #fff !important;
+      font-weight: bold;
+    }
+    .nav-link {
+      color: #bbb !important;
+    }
+    .nav-link:hover {
+      color: #fff !important;
+    }
+    footer {
+      background-color: #111;
+      text-align: center;
+      padding: 15px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      color: #888;
+    }
+    .error-msg {
+      color: #ff6666;
+      font-size: 13px;
+      display: none;
+    }
+    .form-text {
+      color: #80dfff;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/main">HealthCure</a>
+    
+    <div class="ml-auto">
+      <a href="{{ url_for('main') }}"
+         class="btn btn-primary"
+         style="background-color: #0077b6; border: none;">
+         Back to Home
+      </a>
+    </div>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"
+            style="background-color: #222;">
+      <span class="navbar-toggler-icon" style="color:#fff;"></span>
+    </button>
+  </nav>
+
+  <!-- Form Section -->
+  <div class="container-fluid" style="background: rgba(0,0,0,0.6); min-height: 100vh; padding: 40px;">
+    <div class="row justify-content-center">
+      <div class="col-md-6" style="background-color: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
+        <h2 class="text-center mb-4">Heart Disease Detection</h2>
+
+        <form method="POST" action="/heart">
+          <!-- Personal Info -->
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Firstname</label>
+              <input type="text" class="form-control" name="firstname" placeholder="Enter your first name" value="{{ firstname or '' }}" required>
+              <small class="error-msg" id="fname-error">⚠️ Only alphabets allowed.</small>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Lastname</label>
+              <input type="text" class="form-control" name="lastname" placeholder="Enter your last name" value="{{ lastname or '' }}" required>
+              <small class="error-msg" id="lname-error">⚠️ Only alphabets allowed.</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Phone No.</label>
+              <input type="text" class="form-control" name="phone_no" placeholder="Enter your phone number" maxlength="10" value="{{ phone_no or '' }}" required>
+              <small class="error-msg" id="phone-error">⚠️ Phone number must be 10 digits.</small>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Email</label>
+              <input type="email" class="form-control" name="email" placeholder="Enter your email address" value="{{ email or '' }}" required
+                     pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}">
+              <small class="error-msg" id="email-error">⚠️ Please enter a valid email address.</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Age</label>
+              <input type="number" class="form-control" name="age" placeholder="Enter your age (1–120)" min="1" max="120" value="{{ age or '' }}" required>
+              <small class="form-text">💡 Age range: 1 – 120 years</small>
+              <small class="error-msg" id="age-error">⚠️ Age must be between 1 and 120.</small>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Gender</label>
+              <select class="form-control" name="gender" required>
+                <option value="" disabled {{ 'selected' if not gender }}>Select your gender</option>
+                <option value="Male" {{ 'selected' if gender=='Male' }}>Male</option>
+                <option value="Female" {{ 'selected' if gender=='Female' }}>Female</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Heart Parameters -->
+          <div class="form-row">
+            <div class="form-group col-md-3">
+              <label>Resting BP</label>
+              <input type="number" class="form-control" 
+                     name="trestbps"
+                     value="{{ form.trestbps }}"
+                     placeholder="Enter Resting BP (90–200)" min="90" max="200" required>
+              <small class="form-text">💡 Resting BP range: 90 – 200 mm Hg</small>
+            </div>
+
+            <div class="form-group col-md-3">
+              <label>Cholesterol</label>
+              <input type="number" class="form-control" 
+                     name="chol"
+                     value="{{ form.chol }}"
+                     placeholder="Enter Cholesterol (120–600)" min="120" max="600" required>
+              <small class="form-text">💡 Cholesterol range: 120 – 600 mg/dL</small>
+            </div>
+
+            <div class="form-group col-md-3">
+              <label>Fasting Blood Sugar</label>
+              <select class="form-control" name="fbs" required>
+                <option value="" disabled {% if form.fbs == "" %}selected{% endif %}>Select option</option>
+                <option value="0" {% if form.fbs == 0 %}selected{% endif %}>False (&lt;120 mg/dL)</option>
+                <option value="1" {% if form.fbs == 1 %}selected{% endif %}>True (&gt;120 mg/dL)</option>
+              </select>
+            </div>
+
+            <div class="form-group col-md-3">
+              <label>Chest Pain Type</label>
+              <select class="form-control" name="cp" required>
+                <option value="" disabled {% if form.cp == "" %}selected{% endif %}>Select type</option>
+                <option value="0" {% if form.cp == 0 %}selected{% endif %}>Typical Angina</option>
+                <option value="1" {% if form.cp == 1 %}selected{% endif %}>Atypical Angina</option>
+                <option value="2" {% if form.cp == 2 %}selected{% endif %}>Non-Anginal Pain</option>
+                <option value="3" {% if form.cp == 3 %}selected{% endif %}>Asymptomatic</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-3">
+              <label>Resting ECG</label>
+              <select class="form-control" name="restecg" required>
+                <option value="" disabled {% if form.restecg == "" %}selected{% endif %}>Select option</option>
+                <option value="0" {% if form.restecg == 0 %}selected{% endif %}>Normal</option>
+                <option value="1" {% if form.restecg == 1 %}selected{% endif %}>ST-T Abnormality</option>
+                <option value="2" {% if form.restecg == 2 %}selected{% endif %}>Left Ventricular Hypertrophy</option>
+              </select>
+            </div>
+
+            <div class="form-group col-md-3">
+              <label>Max Heart Rate</label>
+              <input type="number" class="form-control" 
+                     name="thalach"
+                     value="{{ form.thalach }}"
+                     placeholder="Enter Max HR (60–210)" min="60" max="210" required>
+              <small class="form-text">💡 Max HR range: 60 – 210 bpm</small>
+            </div>
+
+            <div class="form-group col-md-3">
+              <label>Exercise Induced Angina</label>
+              <select class="form-control" name="exang" required>
+                <option value="" disabled {% if form.exang == "" %}selected{% endif %}>Select option</option>
+                <option value="0" {% if form.exang == 0 %}selected{% endif %}>No</option>
+                <option value="1" {% if form.exang == 1 %}selected{% endif %}>Yes</option>
+              </select>
+            </div>
+
+            <div class="form-group col-md-3">
+              <label>Oldpeak</label>
+              <input type="number" step="0.1" class="form-control" 
+                     name="oldpeak"
+                     value="{{ form.oldpeak }}"
+                     placeholder="Enter Oldpeak (0.0–6.5)" min="0.0" max="6.5" required>
+              <small class="form-text">💡 Oldpeak range: 0.0 – 6.5</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label>Slope of Peak Exercise</label>
+              <select class="form-control" name="slope" required>
+                <option value="" disabled {% if form.slope == "" %}selected{% endif %}>Select slope</option>
+                <option value="0" {% if form.slope == 0 %}selected{% endif %}>Upsloping</option>
+                <option value="1" {% if form.slope == 1 %}selected{% endif %}>Flat</option>
+                <option value="2" {% if form.slope == 2 %}selected{% endif %}>Downsloping</option>
+              </select>
+            </div>
+
+            <div class="form-group col-md-4">
+              <label>Number of Major Vessels</label>
+              <input type="number" class="form-control" 
+                     name="ca"
+                     value="{{ form.ca }}"
+                     placeholder="Enter Major Vessels (0–3)" min="0" max="3" required>
+              <small class="form-text">💡 Number of Major Vessels: 0 – 3</small>
+            </div>
+
+            <div class="form-group col-md-4">
+              <label>Thal</label>
+              <select class="form-control" name="thal" required>
+                <option value="" disabled {% if form.thal == "" %}selected{% endif %}>Select Thal type</option>
+                <option value="0" {% if form.thal == 0 %}selected{% endif %}>Normal</option>
+                <option value="1" {% if form.thal == 1 %}selected{% endif %}>Fixed Defect</option>
+                <option value="2" {% if form.thal == 2 %}selected{% endif %}>Reversible Defect</option>
+                <option value="3" {% if form.thal == 3 %}selected{% endif %}>Not Specified</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-success btn-block mt-4">Submit</button>
+        </form>
+
+        <!-- Prediction Display -->
+        {% if prediction %}
+          <div class="mt-4 p-3 text-center" style="background-color: rgba(0,0,0,0.7); border-radius: 10px;">
+            <h4 style="background-color: #444; padding: 10px; margin: -20px -20px 20px -20px; border-radius: 10px 10px 0 0;">
+              Heart Disease Test Results
+            </h4>
+            <div class="row">
+              <div class="col-md-4">
+                <img src="/static/heart-icon.jpg" alt="Heart Icon" style="max-width: 100%; height: auto;">
+              </div>
+              <div class="col-md-8 text-left">
+                <p><strong>First Name:</strong> {{ firstname }}</p>
+                <p><strong>Last Name:</strong> {{ lastname }}</p>
+                <p><strong>Age:</strong> {{ age }}</p>
+                <p><strong>Gender:</strong> {{ gender }}</p>
+                <p><strong>Result:</strong> <span style="font-weight: bold;">{{ prediction }}</span></p>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="alert alert-danger mt-3" role="alert">
+              {% for message in messages %}
+                {{ message }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    // First & last name only alphabets
+    const fname = document.querySelector('input[name="firstname"]');
+    const lname = document.querySelector('input[name="lastname"]');
+    const fnameError = document.getElementById('fname-error');
+    const lnameError = document.getElementById('lname-error');
+
+    fname.addEventListener('input', () => {
+      if (!/^[A-Za-z]*$/.test(fname.value)) {
+        fnameError.style.display = 'block';
+        fname.value = fname.value.replace(/[^A-Za-z]/g, '');
+      } else {
+        fnameError.style.display = 'none';
+      }
+    });
+
+    lname.addEventListener('input', () => {
+      if (!/^[A-Za-z]*$/.test(lname.value)) {
+        lnameError.style.display = 'block';
+        lname.value = lname.value.replace(/[^A-Za-z]/g, '');
+      } else {
+        lnameError.style.display = 'none';
+      }
+    });
+
+    // Phone validation
+    const phone = document.querySelector('input[name="phone_no"]');
+    const phoneError = document.getElementById('phone-error');
+    phone.addEventListener('input', () => {
+      phone.value = phone.value.replace(/[^0-9]/g, '');
+      phoneError.style.display = (phone.value.length !== 10) ? 'block' : 'none';
+    });
+
+    // Email validation
+    const email = document.querySelector('input[name="email"]');
+    const emailError = document.getElementById('email-error');
+    email.addEventListener('input', () => {
+      const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      emailError.style.display = pattern.test(email.value) ? 'none' : 'block';
+    });
+
+    // Age validation
+    const ageInput = document.querySelector('input[name="age"]');
+    const ageError = document.getElementById('age-error');
+    ageInput.addEventListener('input', () => {
+      ageInput.value = ageInput.value.replace(/[^0-9]/g, '');
+      const value = parseInt(ageInput.value);
+      ageError.style.display = (!value || value < 1 || value > 120) ? 'block' : 'none';
+    });
+  </script>
+
+  <script>
+    window.addEventListener("load", function () {
+      if (performance.navigation.type === 1) { 
+        const resultSection = document.querySelector(".mt-4.p-3.text-center");
+        if (resultSection) {
+          resultSection.style.display = "none";
+        }
+      }
+    });
+  </script>
+</body>
+</html>

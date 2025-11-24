@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HealthCure AI – Medical Assistant</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"/>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --secondary: #059669;
+      --background: #eff6ff;
+      --sidebar: rgba(173, 216, 230, 0.2);
+      --sidebar-hover: rgba(173, 216, 230, 0.5);
+      --text: #1e293b;
+      --text-light: #64748b;
+      --gradient-start: #2563eb;
+      --gradient-end: #7c3aed;
+    }
+    body { font-family: "Inter", sans-serif; background: var(--background); color: var(--text); overflow-x: hidden;}
+    .sidebar { width: 280px; position: fixed; height: 100vh; background: var(--sidebar); padding: 1.5rem; border-right: 1px solid rgba(173,216,230,0.4);}
+    .sidebar a { display: block; color: #000; padding: 0.75rem 1rem; text-decoration: none; border-radius: 8px; transition: 0.2s;}
+    .sidebar a:hover { background: var(--sidebar-hover);}
+    .prediction-card { margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-radius: 1rem; background: linear-gradient(135deg, white 0%, #fafafa 100%);}
+    .response-box { background-color: #f8f9fa; border-left: 4px solid var(--primary); border-radius: 5px; padding: 15px; margin-top: 10px; white-space: pre-wrap;}
+    .btn-primary { background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end)); border: none;}
+    .btn-primary:hover { transform: translateY(-2px);}
+    /* Prevent the whole prediction card from scrolling */
+.prediction-card {
+  max-height: none !important;
+  overflow: visible !important;
+  position: relative;
+}
+.prediction-card, .response-section, form {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+main {
+  margin-left: 280px;
+  padding: 2rem;
+  min-height: 100vh;
+  width: calc(100% - 280px);
+}
+
+    .input-group { margin: 1.5rem 0; background: #ede9fe; padding: 1.5rem; border-radius: 0.75rem;}
+  </style>
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-header mb-4">
+      <a href="{{ url_for('main') }}" style="font-size:1.4rem;font-weight:700;color:#007acc;text-decoration:none;">🤖 HealthCure AI</a>
+    </div>
+    <ul class="nav flex-column">
+      <li class="nav-item"><a href="{{ url_for('main') }}" class="nav-link">🏠 Back to Home</a></li>
+    </ul>
+  </nav>
+
+  <main style="margin-left:280px; padding:2rem; min-height:100vh; width: calc(100% - 280px);">
+    <div class="card prediction-card">
+      <div class="card-body">
+        <div class="text-center mb-3">
+          <i class="bi bi-heart-pulse" style="font-size:2.5rem;color:var(--primary);margin-bottom:1rem;"></i>
+          <h2>HealthCure AI – Medical Assistant</h2>
+        </div>
+
+
+        {% if chat_history %}
+  <div class="response-section" style="margin-top:2.5rem; border-top:2px solid #f0f0f0; padding-top:2rem;max-height: 60vh; overflow-y:auto; overflow-x:hidden;">
+  {% for msg in chat_history %}
+    {% if msg.role == 'user' %}
+      <div class="response-box" style="background-color:#dbeafe; border-left-color: var(--secondary);"><strong>You:</strong><br>{{ msg.content }}</div>
+    {% elif msg.role == 'assistant' %}
+      <div class="response-box"><strong>Assistant:</strong><br>{{ msg.content | safe }}</div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+
+  <script>
+    // Auto-scroll to bottom
+    const responseSection = document.querySelector('.response-section');
+    if (responseSection) {
+      responseSection.scrollTop = responseSection.scrollHeight;
+    }
+  </script>
+{% endif %}
+
+
+  <form id="chatForm" action="/ask" method="post" style="margin-top: 1.5rem;">
+  <div class="mb-3">
+    <textarea class="form-control" name="prompt" rows="2" style="resize: none;" required placeholder="Describe your symptoms or ask a medical question..."></textarea>
+  </div>
+
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary flex-grow-1">
+      <i class="bi bi-send me-2"></i>Submit Question
+    </button>
+    <button type="button" class="btn btn-warning flex-grow-1" id="resetBtn">
+      <i class="bi bi-x-circle me-2"></i>Reset
+    </button>
+  </div>
+</form>
+
+
+        <p class="text-center" style="color:var(--text-light);font-size:0.875rem;margin-top:2rem;">
+          This AI Assistant is for informational purposes only and is not a substitute for professional medical advice.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// RESET CHAT
+document.getElementById('resetBtn').addEventListener('click', function() {
+  fetch("{{ url_for('chatbot_reset') }}", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" }
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log(data); // {success: true}
+
+    // Clear the form fields
+    document.getElementById('chatForm').reset();
+
+    // Remove all chat messages from page
+    const responseSection = document.querySelector('.response-section');
+    if (responseSection) responseSection.innerHTML = ''; // clear messages
+
+    // Scroll chat to top
+    if (responseSection) responseSection.scrollTop = 0;
+  })
+  .catch(err => console.error(err));
+});
+
+// ENTER TO SUBMIT
+const chatForm = document.getElementById('chatForm');
+const chatTextarea = chatForm.querySelector('textarea');
+
+chatTextarea.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault(); // Prevent adding a new line
+    chatForm.submit();  // Submit the form
+  }
+});
+
+// AUTO-SCROLL MESSAGES TO BOTTOM
+function scrollChatToBottom() {
+  const responseSection = document.querySelector('.response-section');
+  if (responseSection) {
+    responseSection.scrollTop = responseSection.scrollHeight;
+  }
+}
+
+// Call on page load
+scrollChatToBottom();
+</script>
+
+
+
+</body>
+</html>

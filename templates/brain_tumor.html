@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HealthCure - Brain Tumor</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-image: url("https://images.unsplash.com/photo-1578774207315-5e7d596d7e79");
+      background-repeat: no-repeat;
+      background-size: cover;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
+    .navbar {
+      background-color: #111 !important;
+    }
+    .navbar-brand {
+      color: #fff !important;
+      font-weight: bold;
+    }
+    .nav-link {
+      color: #bbb !important;
+    }
+    .nav-link:hover {
+      color: #fff !important;
+    }
+    footer {
+      background-color: #111;
+      text-align: center;
+      padding: 15px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      color: #888;
+    }
+    .error-msg {
+      color: #ff6666;
+      font-size: 13px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">HealthCure</a>
+    <div class="ml-auto">
+      <a href="{{ url_for('main') }}" 
+         class="btn btn-primary"
+         style="background-color: #0077b6; border: none;">
+         Back to Home
+      </a>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"
+            style="background-color: #222;">
+      <span class="navbar-toggler-icon" style="color:#fff;"></span>
+    </button>
+  </nav>
+
+  <div class="container-fluid" style="background: url('/static/brain-tumor-bg.jpg') center center/cover no-repeat; min-height: 100vh; padding: 40px;">
+    <div class="row justify-content-center">
+      <div class="col-md-6" style="background-color: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
+        <h2 class="text-center mb-4">Brain Tumor Detection</h2>
+        <form method="POST" action="/brain_tumor" enctype="multipart/form-data" id="tumorForm">
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Firstname</label>
+              <input type="text" class="form-control" name="firstname" placeholder="Enter your first name" value="{{ firstname or '' }}" required pattern="[A-Za-z]+" title="Only alphabets allowed">
+              <small class="error-msg">⚠️ Only alphabets allowed.</small>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Lastname</label>
+              <input type="text" class="form-control" name="lastname" placeholder="Enter your last name" value="{{ lastname or '' }}" required pattern="[A-Za-z]+" title="Only alphabets allowed">
+              <small class="error-msg">⚠️ Only alphabets allowed.</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Phone No.</label>
+              <input type="text" class="form-control" name="phone_no" placeholder="Enter your phone number" pattern="\d{10}" maxlength="10" title="Enter a valid 10-digit number" value="{{ phone_no or '' }}" required>
+              <small class="error-msg">⚠️ Enter only digits (10 digits).</small>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Email</label>
+              <input type="email" class="form-control" name="email" placeholder="Enter your email address" value="{{ email or '' }}" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Enter a valid email address">
+              <small class="error-msg">⚠️ Enter a valid email (example@mail.com).</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Age</label>
+              <input type="number" class="form-control" name="age" placeholder="Enter your age" min="1" max="120" value="{{ age or '' }}" required>
+              <small class="error-msg">⚠️ Age must be between 1 and 120.</small>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Gender</label>
+              <select class="form-control" name="gender" required>
+                <option value="" disabled  {{ 'selected' if not gender }}>Select your gender</option>
+                <option {{ 'selected' if gender=='Male' }}>Male</option>
+                <option {{ 'selected' if gender=='Female' }}>Female</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Upload your Brain MRI</label><br>
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click();">Choose File</button><br>
+            <input type="file" id="fileInput" name="image" accept="image/*" style="display:none;" required>
+            <span id="fileName" style="color: white; display: block; margin-top: 5px;">
+              {% if filename %}Uploaded file: {{ filename }}{% endif %}
+            </span>
+          </div>
+
+          <button type="submit" class="btn btn-success btn-block mt-4">Submit</button>
+        </form>
+
+        {% if prediction %}
+        <div class="mt-4 p-3 text-center" style="background-color: rgba(0,0,0,0.7); border-radius: 10px;">
+          <h4 style="background-color: #444; padding: 10px; margin: -20px -20px 20px -20px; border-radius: 10px 10px 0 0;">
+            Brain Tumor Test Results
+          </h4>
+          <div class="row">
+            <div class="col-md-4">
+              <img src="/static/brain-tumor-bg.jpg" alt="Brain Tumor Icon" style="max-width: 100%; height: auto;">
+            </div>
+            <div class="col-md-8 text-left">
+              <p><strong>First Name:</strong> {{ firstname }}</p>
+              <p><strong>Last Name:</strong> {{ lastname }}</p>
+              <p><strong>Age:</strong> {{ age }}</p>
+              <p><strong>Gender:</strong> {{ gender }}</p>
+              <p><strong>Result:</strong> <span style="font-weight: bold;">{{ prediction }}</span></p>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+          <div class="alert alert-danger mt-3" role="alert">
+            {% for message in messages %}
+              {{ message }}
+            {% endfor %}
+          </div>
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    document.querySelectorAll('input').forEach(input => {
+      const errorMsg = input.parentElement.querySelector('.error-msg');
+      input.addEventListener('input', () => {
+        const name = input.name;
+        let valid = true;
+        const val = input.value.trim();
+        if (name === 'firstname' || name === 'lastname') {
+          input.value = val.replace(/[^A-Za-z]/g, '');
+          valid = /^[A-Za-z]+$/.test(input.value);
+        } else if (name === 'email') {
+          valid = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(val);
+        } else if (name === 'phone_no') {
+          input.value = val.replace(/\D/g, '');
+          valid = /^\d{10}$/.test(input.value);
+        } else if (name === 'age') {
+          const numVal = parseInt(val);
+          valid = numVal >= 1 && numVal <= 120;
+        }
+        if (errorMsg) errorMsg.style.display = valid ? 'none' : 'block';
+      });
+    });
+
+    window.addEventListener("load", function () {
+      if (performance.navigation.type === 1) { 
+        const resultSection = document.querySelector(".mt-4.p-3.text-center");
+        if (resultSection) {
+          resultSection.style.display = "none";
+        }
+      }
+    });
+
+    const fileInput = document.getElementById('fileInput');
+    const fileNameSpan = document.getElementById('fileName');
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        fileNameSpan.textContent = 'Uploaded file: ' + fileInput.files[0].name;
+      } else {
+        fileNameSpan.textContent = '';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HealthCure - Alzheimer</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-image: url("https://images.unsplash.com/photo-1576091160550-2173fdabea36");
+      background-repeat: no-repeat;
+      background-size: cover;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
+    .navbar {
+      background-color: #111 !important;
+    }
+    .navbar-brand {
+      color: #fff !important;
+      font-weight: bold;
+    }
+    .nav-link {
+      color: #bbb !important;
+    }
+    .nav-link:hover {
+      color: #fff !important;
+    }
+    footer {
+      background-color: #111;
+      text-align: center;
+      padding: 15px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      color: #888;
+    }
+    .uploaded-file {
+      margin-top: 5px;
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">HealthCure</a>
+    <div class="ml-auto">
+      <a href="{{ url_for('main') }}" 
+         class="btn btn-primary"
+         style="background-color: #0077b6; border: none;">
+         Back to Home
+      </a>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"
+            style="background-color: #222;">
+      <span class="navbar-toggler-icon" style="color:#fff;"></span>
+    </button>
+  </nav>
+
+  <div class="container-fluid" style="background: url('/static/alzheimer-bg.jpg') center center/cover no-repeat; min-height: 100vh; padding: 40px;">
+    <div class="row justify-content-center">
+      <div class="col-md-6" style="background-color: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
+        <h2 class="text-center mb-4">Alzheimer Detection</h2>
+        <form method="POST" action="/alzheimer" enctype="multipart/form-data">
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Firstname</label>
+              <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Enter Your First Name" value="{{ firstname or '' }}" required>
+              <small id="fname_error" style="color:red; display:none;">Only alphabets are allowed.</small>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Lastname</label>
+              <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Enter Your Last Name" value="{{ lastname or '' }}" required>
+              <small id="lname_error" style="color:red; display:none;">Only alphabets are allowed.</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Phone No.</label>
+              <input 
+                type="text" 
+                id="phone_no"
+                class="form-control" 
+                name="phone_no" 
+                placeholder="Enter Your Mobile Number" 
+                value="{{ phone_no or '' }}"
+                maxlength="10"  
+                required
+              >
+              <small id="phone_error" style="color:red; display:none;">Phone number must be exactly 10 digits.</small>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Email</label>
+              <input 
+                type="email" 
+                class="form-control" 
+                id="email" 
+                name="email" 
+                placeholder="Enter your Email" 
+                value="{{ email or '' }}"
+                required
+              >
+              <small id="email_error" style="color:red; display:none;">
+                Enter a valid email (example@mail.com)
+              </small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Age</label>
+              <input 
+                type="number" 
+                class="form-control" 
+                id="age" 
+                name="age" 
+                placeholder="Enter Your Age" 
+                value="{{ age or '' }}"
+                required 
+                min="1" 
+                max="120"
+                onkeydown="return event.keyCode !== 69 && event.keyCode !== 187 && event.keyCode !== 189"
+              >
+              <small id="age_error" style="color:red; display:none;">Please enter a valid age between 1 and 120.</small>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Gender</label>
+              <select class="form-control" name="gender" required>
+                <option value="" disabled  {{ 'selected' if not gender }}>Select your gender</option>
+                <option {{ 'selected' if gender=='Male' }}>Male</option>
+                <option {{ 'selected' if gender=='Female' }}>Female</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Upload your Brain Scan</label><br>
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click();">
+              Choose File
+            </button><br>
+            <input type="file" id="fileInput" name="image" accept="image/*" style="display:none;" required>
+            <span id="fileName" style="color: white; display: block; margin-top: 5px;">
+              {% if filename %}Uploaded file: {{ filename }}{% endif %}
+            </span>
+          </div>
+
+          <button type="submit" class="btn btn-success btn-block mt-4">Submit</button>
+        </form>
+
+        {% if prediction %}
+        <div class="mt-4 p-3 text-center" style="background-color: rgba(0,0,0,0.7); border-radius: 10px;">
+          <h4 style="background-color: #444; padding: 10px; margin: -20px -20px 20px -20px; border-radius: 10px 10px 0 0;">
+            Alzheimer Test Results
+          </h4>
+          <div class="row">
+            <div class="col-md-4">
+              <img src="/static/alzheimer-bg.jpg" alt="Brain Tumor Icon" style="max-width: 100%; height: auto;">
+            </div>
+
+            <div class="col-md-8 text-left">
+              <p><strong>First Name:</strong> {{ firstname }}</p>
+              <p><strong>Last Name:</strong> {{ lastname }}</p>
+              <p><strong>Age:</strong> {{ age }}</p>
+              <p><strong>Gender:</strong> {{ gender }}</p>
+              <p><strong>Result:</strong> <span style="font-weight: bold;">{{ prediction }}</span></p>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+          <div class="alert alert-danger mt-3" role="alert">
+            {% for message in messages %}
+              {{ message }}
+            {% endfor %}
+          </div>
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    const ageInput = document.getElementById("age");
+    const ageError = document.getElementById("age_error");
+    ageInput.addEventListener("input", function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+      const value = parseInt(this.value);
+      if (isNaN(value) || value < 1 || value > 120) {
+        ageError.style.display = "block";
+        this.style.borderColor = "red";
+      } else {
+        ageError.style.display = "none";
+        this.style.borderColor = "";
+      }
+    });
+
+    const phoneInput = document.getElementById("phone_no");
+    const phoneError = document.getElementById("phone_error");
+    phoneInput.addEventListener("input", function() {
+      this.value = this.value.replace(/\D/g, '');
+      if (this.value.length !== 10) {
+        phoneError.style.display = "block";
+        this.style.borderColor = "red";
+      } else {
+        phoneError.style.display = "none";
+        this.style.borderColor = "";
+      }
+    });
+
+    const fnameInput = document.getElementById("firstname");
+    const fnameError = document.getElementById("fname_error");
+    fnameInput.addEventListener("input", function() {
+      const originalValue = this.value;
+      const filteredValue = originalValue.replace(/[^A-Za-z]/g, '');
+      if (originalValue !== filteredValue) {
+        fnameError.style.display = "block";
+        this.style.borderColor = "red";
+      } else {
+        fnameError.style.display = "none";
+        this.style.borderColor = "";
+      }
+      this.value = filteredValue;
+    });
+
+    const lnameInput = document.getElementById("lastname");
+    const lnameError = document.getElementById("lname_error");
+    lnameInput.addEventListener("input", function() {
+      const originalValue = this.value;
+      const filteredValue = originalValue.replace(/[^A-Za-z]/g, '');
+      if (originalValue !== filteredValue) {
+        lnameError.style.display = "block";
+        this.style.borderColor = "red";
+      } else {
+        lnameError.style.display = "none";
+        this.style.borderColor = "";
+      }
+      this.value = filteredValue;
+    });
+
+    const emailInput = document.getElementById("email");
+    const emailError = document.getElementById("email_error");
+    emailInput.addEventListener("input", function() {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(this.value)) {
+        emailError.style.display = "block";
+        this.style.borderColor = "red";
+      } else {
+        emailError.style.display = "none";
+        this.style.borderColor = "";
+      }
+    });
+
+    window.addEventListener("load", function () {
+      if (performance.navigation.type === 1) { 
+        const resultSection = document.querySelector(".mt-4.p-3.text-center");
+        if (resultSection) {
+          resultSection.style.display = "none";
+        }
+      }
+    });
+
+    const fileInput = document.getElementById('fileInput');
+    const fileNameSpan = document.getElementById('fileName');
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        fileNameSpan.textContent = 'Uploaded file: ' + fileInput.files[0].name;
+      } else {
+        fileNameSpan.textContent = '';
+      }
+    });
+  </script>
+</body>
+</html>

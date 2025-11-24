@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HealthCure - Prediction Results</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-image: url("https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcm0zNzNiYXRjaDE1LWJnLTExLmpwZw.jpg");
+      background-repeat: no-repeat;
+      background-size: cover;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
+    .navbar {
+      background-color: #111 !important;
+    }
+    .navbar-brand {
+      color: #fff !important;
+      font-weight: bold;
+    }
+    .nav-link {
+      color: #bbb !important;
+    }
+    .nav-link:hover {
+      color: #fff !important;
+    }
+    footer {
+      background-color: #111;
+      text-align: center;
+      padding: 15px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      color: #888;
+    }
+    .table-container {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 40px;
+    }
+    .table {
+      color: #fff;
+    }
+    .table th, .table td {
+      border-color: #444;
+    }
+    .table thead th {
+      background-color: #333;
+    }
+    .table tbody tr:hover {
+      background-color: #222;
+    }
+    .thumbnail {
+      max-width: 100px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg">
+  <a class="navbar-brand" href="/">HealthCure</a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"
+          style="background-color: #222;">
+    <span class="navbar-toggler-icon" style="color:#fff;"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a href="/main" class="btn btn-primary">Back to Home</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container-fluid" style="min-height: 100vh; padding: 40px;">
+  <div class="row justify-content-center">
+    <div class="col-md-10 table-container">
+      <h2 class="text-center mb-4">Prediction Results</h2>
+      <div class="text-center mb-3">
+        <a href="{{ url_for('download_report') }}" class="btn btn-lg btn-success">Download Full Report</a>
+      </div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Disease</th>
+            <th>Prediction</th>
+            <th>Image</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for prediction in predictions %}
+          <tr>
+            <td>{{ prediction.firstname }}</td>
+            <td>{{ prediction.lastname }}</td>
+            <td>{{ prediction.age }}</td>
+            <td>{{ prediction.gender }}</td>
+            <td>{{ prediction.disease }}</td>
+            <td>{{ prediction.prediction }}</td>
+            <td>
+              {% if prediction.image %}
+              <img src="data:image/png;base64,{{ prediction.image }}" alt="Prediction Image" class="thumbnail">
+              {% else %}
+              N/A
+              {% endif %}
+            </td>
+            <td>{{ prediction.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HealthCure – All-in-One Medical Solution</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+/* ------------------- Body & Global ------------------- */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f0f2f5;
+}
+
+/* ------------------- Sidebar ------------------- */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background: rgba(173, 216, 230, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding-top: 20px;
+  color: #fff;
+  border-right: 1px solid rgba(173, 216, 230, 0.4);
+  overflow-y: auto;
+}
+.sidebar h4 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: bold;
+  color: #007acc;
+}
+.sidebar a {
+  display: block;
+  color: #000;
+  padding: 12px 20px;
+  text-decoration: none;
+  border-radius: 8px;
+  margin: 4px 12px;
+  transition: 0.2s;
+}
+.sidebar a:hover,
+.sidebar a.active {
+  background: rgba(173, 216, 230, 0.8);
+  color: #000;
+}
+.sidebar a[style*="color:red;"] {
+  color: #000 !important;
+}
+.sidebar a[style*="color:red;"]:hover {
+  background: rgba(173, 216, 230, 0.8);
+  color: #000 !important;
+}
+
+/* ------------------- Main Content ------------------- */
+.main {
+  margin-left: 240px;
+  padding: 30px;
+  width: auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background: #f0f2f5;
+}
+.content-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  padding: 30px;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+}
+.hero {
+  text-align: center;
+  margin-bottom: 25px;
+}
+.hero h1 {
+  font-weight: 700;
+}
+.hero p {
+  max-width: 850px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ------------------- Feature Cards ------------------- */
+.row.cards-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* consistent spacing between cards */
+}
+
+.feature-card {
+  border: 1px solid #e2e6ea;
+  border-radius: 12px;
+  transition: 0.2s;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* ensures equal height */
+  background: #fff;
+}
+.feature-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  transform: translateY(-3px);
+}
+.card-img-top {
+  height: 180px;
+  object-fit: cover;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.card-title {
+  min-height: 2.5rem; /* uniform title height */
+  text-align: center;
+}
+.card-text {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.5rem;
+  flex-grow: 1; /* makes all descriptions align */
+}
+ul.symptoms {
+  padding-left: 18px;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: #666;
+  flex-grow: 1;
+}
+.card-body .text-center {
+  margin-top: auto; /* button sticks at bottom */
+  padding-top: 10px;
+}
+
+/* ------------------- Notes ------------------- */
+.note-box {
+  background: #e7f5ff;
+  border-left: 5px solid #0d6efd;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 30px;
+}
+
+/* ------------------- Footer ------------------- */
+footer {
+  text-align: center;
+  padding: 15px;
+  color: black;
+  margin-top: auto;
+}
+
+/* ------------------- Responsive Adjustments ------------------- */
+/* Default: normal flex wrap for large screens */
+.cards-row {
+  display: flex;
+  flex-wrap: wrap;       /* allow wrapping on large screens */
+  gap: 20px;
+}
+
+/* Cards fixed width for scroll on small screens */
+@media (max-width: 992px) {
+  .cards-row {
+    flex-wrap: nowrap;         /* prevent wrap on small screens */
+    overflow-x: auto;          /* horizontal scroll */
+    -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+  }
+
+  .cards-row .col-md-4 {
+    flex: 0 0 300px;           /* card width for scroll */
+    max-width: 300px;
+  }
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex-grow: 1;
+}
+.symptoms {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* limit to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card-text, .symptoms {
+  margin-bottom: 0.75rem;
+}
+.btn-check {
+  margin-top: auto; /* push button to bottom */
+}
+.about-text {
+    flex-grow: 1;              /* take available vertical space */
+    text-align: justify;       /* fill the width of the card */
+    line-height: 1.25rem;      /* control spacing between lines */
+    margin-bottom: 0.75rem;    
+    display: -webkit-box;
+    -webkit-line-clamp: 5;     /* maximum 5 lines visually */
+    -webkit-box-orient: vertical;
+    overflow: hidden;          /* hide extra text */
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="sidebar">
+  <h4><i class="fa-solid fa-heart-pulse"></i> HealthCure</h4>
+  <a href="#" class="active"><i class="fa-solid fa-house"></i> Home</a>
+  <a href="/heart"><i class="fa-solid fa-heart"></i> Heart</a>
+  <a href="/diabetes"><i class="fa-solid fa-droplet"></i> Diabetes</a>
+  <a href="/breast"><i class="fa-solid fa-ribbon"></i> Breast Cancer</a>
+  <a href="/brain_tumor"><i class="fa-solid fa-brain"></i> Brain Tumor</a>
+  <a href="/pneumonia"><i class="fa-solid fa-lungs"></i> Pneumonia</a>
+  <a href="/alzheimer"><i class="fa-solid fa-person-cane"></i> Alzheimer</a>
+  <a href="/covid19"><i class="fa-solid fa-virus-covid"></i> Covid19</a>
+  <a href="/medical_chatbot"><i class="fa-solid fa-robot"></i> Chatbot</a>
+  <a href="/results"><i class="fa-solid fa-chart-line"></i> Results</a>
+  {% if session.get('username') %}
+  <hr>
+  <a href="{{ url_for('logout') }}" style="color:red;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+  {% endif %}
+</div>
+
+<div class="main">
+  <div class="content-card">
+    <div class="hero">
+      <h1>HealthCure – An All-in-One Medical Solution</h1>
+      <p>
+        Detect risks for <strong>Heart Disease, Diabetes, Alzheimer’s, Pneumonia,
+        Covid-19, Breast Cancer</strong> and <strong>Brain Tumor</strong>—all in one place.
+        Upload reports or images and get quick AI-powered insights to help you stay
+        aware and take early action.
+      </p>
+    </div>
+
+<div class="row g-4 mb-6"> <!-- Cards Row -->
+  {% set cards = [
+    ('/static/alzheimer-bg.jpg','Alzheimer','/alzheimer',
+      'Progressive brain disorder. Slowly destroys memory and thinking skills. Causes confusion and disorientation. Mainly affects older adults. Can interfere with daily life, personal care, and routine activities.',
+      ['Memory loss','Confusion','Difficulty speaking','Disorientation','Mood swings']),
+    ('/static/diabetes.jpg','Diabetes','/diabetes',
+      'Diabetes is a chronic condition characterized by high levels of glucose in the blood due to insufficient insulin production or poor insulin response. It can lead to serious complications if left uncontrolled.',
+      ['Frequent urination','Excessive thirst','Unexplained weight loss','Fatigue','Blurred vision']),
+    ('/static/brain-tumor-bg.jpg','Brain Tumor','/brain_tumor',
+      'Abnormal growth of cells in the brain. Can be benign or malignant. May cause headaches, seizures, or vision problems. Symptoms depend on size and location. Can affect daily activities and brain function.',
+      ['Headaches','Seizures','Vision changes','Balance problems','Nausea']),
+    ('/static/breast-cancer-bg.jpg','Breast Cancer','/breast',
+      'Breast cancer develops in the cells of the breast and can spread to other parts of the body if not detected early. Regular screening and medical checkups help in early detection and treatment.',
+      ['Breast lump','Change in breast shape','Skin dimpling','Nipple discharge','Pain in the breast']),
+    ('/static/covid-bg.png','COVID-19','/covid19',
+      'COVID-19 is a contagious respiratory illness caused by the SARS-CoV-2 virus. Symptoms range from mild cold-like illness to severe respiratory distress, and preventive measures are essential.',
+      ['Fever','Cough','Loss of taste or smell','Fatigue','Shortness of breath']),
+    ('/static/heart.jpg','Heart Disease','/heart',
+      'Heart disease refers to conditions affecting the heart and blood vessels, including coronary artery disease, arrhythmias, and heart attacks. Lifestyle changes and treatment can reduce risks.',
+      ['Chest pain','Shortness of breath','Fatigue','Irregular heartbeat','Swelling in legs']),
+    ('/static/pneumonia-bg.avif','Pneumonia','/pneumonia',
+      'Pneumonia is an infection that inflames the air sacs in one or both lungs, which may fill with fluid. It can be caused by bacteria, viruses, or fungi and is particularly serious in children and the elderly.',
+      ['Cough with phlegm','Fever','Difficulty breathing','Chest pain','Fatigue'])
+  ] %}
+
+  {% for img, name, link, desc, sym in cards %}
+  <div class="col-md-4 col-sm-6 mb-4 d-flex">
+    <div class="card feature-card flex-fill d-flex flex-column h-100">
+      <img class="card-img-top" src="{{ url_for('static', filename=img.split('/')[-1]) }}" alt="{{ name }}">
+      <div class="card-body d-flex flex-column">
+        <h5 class="card-title text-center mb-3">{{ name }}</h5>
+
+        <div class="card-content flex-grow-1">
+          <!-- About with fixed height for 5 lines -->
+          <p class="mb-2 about-text" style="height:9rem; overflow:hidden; line-height:1.5rem;"><strong>About:</strong> {{ desc }}</p>
+
+          <!-- Symptoms limited to 2 lines -->
+          <p class="mb-2"><strong>Symptoms:</strong> <span class="symptoms">{{ sym | join(', ') }}</span></p>
+        </div>
+
+        <div class="mt-auto text-center">
+          <a href="{{ link }}" class="btn btn-primary">Check Now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+  </div>
+
+  <footer>
+    &copy; 2025 HealthCure. All Rights Reserved.
+  </footer>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

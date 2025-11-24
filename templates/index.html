@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HealthCure - Multi-Disease Detection System</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2966/2966486.png">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #d6c5c5;
+}
+
+/* ================= Header/Navbar ================= */
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  color: #0077b6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 50px;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+header .logo {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #0077b6;
+}
+
+header nav a {
+  color: #333;
+  text-decoration: none;
+  margin-left: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+header nav a:hover {
+  color: #0077b6;
+}
+
+header nav {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-btn {
+  display: inline-block;
+  padding: 8px 20px;
+  background: #0077b6;
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+.nav-btn:hover {
+  background: #0096c7;
+  transform: translateY(-2px);
+}
+
+/* ================= Landing Page ================= */
+section {
+  padding: 100px 50px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#home {
+  background: linear-gradient(rgba(79, 172, 254, 0.6), rgba(0, 242, 254, 0.6)),
+    url("{{ url_for('static', filename='background.jpg') }}") no-repeat center center;
+  background-size: cover;
+  color: white;
+  flex-direction: row;
+  gap: 50px;
+  text-align: left;
+}
+
+#home .content {
+  max-width: 500px;
+}
+
+#home h1 {
+  font-family:'Momo Trust Sans';
+  font-weight: 900;
+  letter-spacing: 1px;
+  font-size: 2.7rem;
+  margin-bottom: 20px;
+  color: #0077b6;
+}
+
+#home p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  color: black;
+}
+
+#home a.btn {
+  text-decoration: none;
+  color: white;
+  background: #0077b6;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+#home a.btn:hover {
+  background: #0096c7;
+}
+
+#home img {
+  width: 400px;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+#home img:hover {
+  transform: scale(1.05);
+}
+
+#about {
+  background: #ffffff;
+  color: #333;
+  flex-direction: row-reverse;
+  gap: 50px;
+  text-align: left;
+}
+
+#about .content {
+  max-width: 500px;
+}
+
+#about h2 {
+  color: #0077b6;
+  margin-bottom: 20px;
+}
+
+#about p {
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+#about img {
+  max-width: 450px;
+  border-radius: 20px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+#about img:hover {
+  transform: scale(1.05);
+}
+
+footer {
+  background: #0077b6;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+/* ================= 3D Auth Modal ================= */
+#auth-page {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  perspective: 1000px;
+  z-index: 2000;
+}
+
+.auth-container {
+  width: 380px;
+  height: 550px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.auth-container.active {
+  transform: rotateY(180deg);
+  height: 550px;
+}
+
+.auth-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  padding: 40px;
+}
+
+.auth-card h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #0077b6;
+}
+
+/* ===== Input Box - Final Fixed Version ===== */
+.input-bx {
+  position: relative;
+  margin-bottom: 20px;
+  width:100%;
+  height:45px ;
+}
+
+.input-bx input {
+  width: 100%;
+  height:100%;
+  padding: 12px 40px; /* Equal space on both sides for icons */
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Left-side icons (user, email, key) */
+.input-bx i.fa-user,
+.input-bx i.fa-envelope,
+.input-bx i.fa-key,
+.input-bx .left-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none;
+  font-size: 16px;
+
+}
+
+/* Right-side eye icons (for password toggle) */
+.input-bx .right-icon,
+.input-bx .eye-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+  font-size: 16px;
+  z-index: 3; /* ensures it's above input field */
+}
+
+.input-bx .right-icon:hover,
+.input-bx .eye-icon:hover {
+  color: #0077b6;
+}
+.password-error {
+    margin-top: 5px;    /* space between input and error */
+    margin-bottom: 30px; /* space between error and Sign Up button */
+    display: block;
+    color: red;
+    font-size: 10px;
+}
+
+
+/* ===== Buttons ===== */
+.btn-signin,
+.btn-signup {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  background: #0077b6;
+  color: white;
+  font-weight: 600;
+  margin-top: 35px;  /* ↑ space above button */
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.btn-signin:hover,
+.btn-signup:hover {
+  background: #0096c7;
+}
+
+/* Forgot password link */
+.forgot-pass {
+  text-align: right;
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.forgot-pass a {
+  color: gray;
+  text-decoration: none;
+}
+
+.forgot-pass a:hover {
+  color: #0077b6;
+}
+
+/* Divider text */
+.option-text {
+  text-align: center;
+  margin: 15px 0;
+  position: relative;
+}
+
+.option-text hr {
+  border: 0;
+  height: 2px;
+  background: #0077b6;
+}
+
+.option-text p {
+  display: inline-block;
+  position: relative;
+  top: -10px;
+  background: white;
+  padding: 0 10px;
+}
+
+/* Google button */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  color: #555;
+  border: 1px solid #ddd;
+  padding: 5px;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: 0.3s;
+  font-weight: 600;
+}
+
+.google-btn:hover {
+  background: #f7f7f7;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.google-logo {
+  height: 20px;
+  width: 20px;
+  margin-right: 10px;
+}
+
+.message {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 13px;
+}
+
+.message a {
+  color: #0077b6;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.message a:hover {
+  color: #023e8a;
+}
+
+.signup-card {
+  transform: rotateY(180deg);
+}
+
+#landing-page,
+#auth-page {
+  transition: opacity 0.5s ease;
+}
+
+.alert-container {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 25px; /* adds space between alert & first input */
+}
+
+.alert {
+  color: red;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #home, #about {
+    flex-direction: column;
+    text-align: center;
+  }
+  #home img, #about img {
+    width: 80%;
+    margin-top: 20px;
+  }
+  header {
+    padding: 15px 20px;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    width: 90%;
+    height: auto;
+  }
+  .auth-card {
+    padding: 25px;
+  }
+  header {
+    padding: 10px 15px;
+  }
+}
+</style>
+</head>
+<body>
+<header>
+  <h4 class="logo"><i class="fa-solid fa-heart-pulse"></i> HealthCure</h4>
+  <nav>
+    <a onclick="showLanding()" class="nav-btn">Home</a>
+    <a onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})" class="nav-btn">About</a>
+    <a onclick="openLogin()" class="nav-btn">Log In</a>
+    <a onclick="openSignup()" class="nav-btn">Sign Up</a>
+  </nav>
+</header>
+
+<!-- Landing Page -->
+<div id="landing-page">
+  <section id="home">
+    <div class="content">
+      <h1>Welcome to HealthCure</h1>
+      <p>Detect multiple diseases accurately with AI-powered healthcare technology. HealthCure analyzes medical images and health data to provide instant, reliable predictions for conditions such as COVID-19, Brain Tumor, Diabetes, Heart Disease, Pneumonia, Breast Cancer, and Alzheimer’s.</p>
+      <p>Get quick results, personalized health insights, and take a step toward smarter, early diagnosis — all in one simple platform.</p>
+      <a class="btn" onclick="openSignup()">Get Started</a>
+    </div>
+    <img src="{{ url_for('static', filename='home.jpg') }}" alt="Health 3D Illustration">
+  </section>
+
+  <section id="about">
+    <div class="content">
+      <h2>About HealthCure</h2>
+      <p>HealthCure is an AI-driven Multi-Disease Detection System built to assist both patients and healthcare professionals. It helps identify several diseases by analyzing medical images and clinical data, delivering fast and accurate diagnostic predictions within seconds.</p>
+      <p>Our goal is to make early disease detection simple, secure, and accessible for everyone. Users can upload scans or enter basic health information to instantly receive their results through an easy-to-use and responsive web interface.</p>
+      <p>HealthCure brings the power of smart technology to healthcare, helping people make informed decisions and promoting a healthier tomorrow.</p>
+    </div>
+    <img src="{{ url_for('static', filename='about.jpg') }}" alt="About HealthCure Image">
+  </section>
+  <footer>
+    <p>&copy; 2025 HealthCure. All rights reserved.</p>
+  </footer>
+</div>
+
+<!-- Auth Modal with 3D Flip -->
+<div id="auth-page">
+  <div class="auth-container" id="authContainer">
+
+    <!-- Sign In Card -->
+    <div class="auth-card signin-card">
+      <h2>Log In</h2>
+      <form method="POST" action="{{ url_for('login') }}">
+        <div class="input-bx">
+          <input type="text" name="username" placeholder="Username" required>
+          <i class="fa-solid fa-user"></i>
+          <span class="username-error" style="color:red; font-size:13px; display:none;">Username cannot start with a number</span>
+        </div>
+        <div class="input-bx">
+          <input type="password" name="password" placeholder="Password" required>
+          <i class="fa-solid fa-key"></i>
+          <i class="fa-solid fa-eye right-icon"></i>
+        </div>
+        <div class="forgot-pass"><a onclick="openForgotPassword()">Forgot password?</a></div>
+        <button type="submit" class="btn-signin">Log In</button>
+      </form>
+
+      <div class="option-text"><hr><p>or</p></div>
+
+      <div class="button-group">
+        <a href="{{ url_for('google.login') }}" class="google-btn">
+          <img src="{{ url_for('static', filename='google-logo.png') }}" alt="Google logo" class="google-logo">
+          Continue with Google
+        </a>
+      </div>
+
+      <p class="message">Not a Member? <a onclick="flipCard()">Sign Up</a></p>
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="alert">
+            {% for message in messages %}
+              {{ message }}<br>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <!-- Sign Up Card -->
+    <div class="auth-card signup-card">
+      <h2>Sign Up</h2>
+      <form method="POST" action="{{ url_for('signup') }}">
+        <div class="input-bx">
+          <input type="text" name="username" required placeholder="Username">
+          <i class="fa-solid fa-user"></i>
+          <span class="username-error" style="color:red; font-size:13px; display:none;">Username cannot start with a number</span>
+        </div>
+        <div class="input-bx">
+          <input type="email" name="email" required placeholder="Email">
+          <i class="fa-solid fa-envelope"></i>
+          <span class="email-error" style="color:red; font-size:13px; display:none;">Email cannot start with a number</span>
+        </div>
+        <div class="input-bx">
+  <i class="fa-solid fa-key left-icon"></i>
+  <input type="password" name="password" placeholder="Password" required>
+  <i class="fa-solid fa-eye right-icon"></i>
+  <span class="password-error" style="color:red; font-size:13px; display:none;">
+    Password must be at least 8 characters, include uppercase, lowercase, number, and special character
+  </span>
+</div>
+
+        <button type="submit" class="btn-signup">Sign Up</button>
+      </form>
+
+      <div class="option-text"><hr><p>or</p></div>
+
+      <div class="button-group">
+        <a href="{{ url_for('google.login') }}" class="google-btn">
+          <img src="{{ url_for('static', filename='google-logo.png') }}" alt="Google logo" class="google-logo">
+          Continue with Google
+        </a>
+      </div>
+
+      <p class="message">Already a Member? <a onclick="flipCard()">Log In</a></p>
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="alert">
+            {% for message in messages %}
+              {{ message }}<br>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <!-- Forgot Password Card -->
+<div class="auth-card forgot-card" style="display:none;">
+  <h2>Reset Password</h2>
+  <form method="POST" action="{{ url_for('forgot_password') }}">
+    <div class="input-bx">
+      <input type="email" name="email" required placeholder="Enter your email">
+      <i class="fa-solid fa-envelope"></i>
+      <span class="email-error" style="color:red; font-size:13px; display:none;">Enter a valid email</span>
+    </div>
+    <button type="submit" class="btn-signup">Send Reset Link</button>
+  </form>
+  <p class="message"><a onclick="closeForgotPassword()">Back to Login</a></p>
+</div>
+
+
+  </div>
+</div>
+
+<script>
+function flipCard() {
+    document.getElementById('authContainer').classList.toggle('active');
+    removeFlashMessage(); 
+}
+
+function openLogin() {
+    document.getElementById('landing-page').style.display = 'none';
+    document.getElementById('auth-page').style.display = 'flex';
+    document.getElementById('authContainer').classList.remove('active');
+    removeFlashMessage();
+}
+
+function openSignup() {
+    document.getElementById('landing-page').style.display = 'none';
+    document.getElementById('auth-page').style.display = 'flex';
+    document.getElementById('authContainer').classList.add('active');
+    removeFlashMessage();
+}
+
+function showLanding() {
+    document.getElementById('landing-page').style.display = 'block';
+    document.getElementById('auth-page').style.display = 'none';
+    document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+}
+
+function removeFlashMessage() {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => alert.remove());
+}
+
+function hideFlashMessage() {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => setTimeout(() => alert.remove(), 3000));
+}
+
+function openForgotPassword() {
+    document.querySelector('.signin-card').style.display = 'none';
+    document.querySelector('.signup-card').style.display = 'none';
+    document.querySelector('.forgot-card').style.display = 'block';
+    removeFlashMessage();
+}
+
+function closeForgotPassword() {
+    document.querySelector('.forgot-card').style.display = 'none';
+    document.querySelector('.signin-card').style.display = 'block';
+}
+
+
+// Click outside modal closes it
+document.getElementById('auth-page').addEventListener('click', function(e){
+    if (e.target === this) { 
+        showLanding(); 
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Form Elements
+    const signupForm = document.querySelector('.signup-card form');
+    const usernameField = signupForm.querySelector('input[name="username"]');
+    const emailField = signupForm.querySelector('input[name="email"]');
+    const passwordField = signupForm.querySelector('input[name="password"]');
+    
+    const usernameError = signupForm.querySelector('.username-error');
+    const emailError = signupForm.querySelector('.email-error');
+    const passwordError = signupForm.querySelector('.password-error');
+
+    // Username & Email input validation (live)
+    usernameField.addEventListener('input', function() {
+        usernameError.style.display = /^\d/.test(this.value) ? 'block' : 'none';
+    });
+
+    emailField.addEventListener('input', function() {
+        emailError.style.display = /^\d/.test(this.value) ? 'block' : 'none';
+    });
+
+    // Form submit validation
+    signupForm.addEventListener('submit', function(e) {
+        let isValid = true;
+
+        if (/^\d/.test(usernameField.value)) {
+            usernameError.style.display = 'block';
+            isValid = false;
+        } else {
+            usernameError.style.display = 'none';
+        }
+
+        if (/^\d/.test(emailField.value)) {
+            emailError.style.display = 'block';
+            isValid = false;
+        } else {
+            emailError.style.display = 'none';
+        }
+
+        const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+        if (!strongPassword.test(passwordField.value)) {
+            passwordError.style.display = 'block';
+            isValid = false;
+        } else {
+            passwordError.style.display = 'none';
+        }
+
+        if (!isValid) {
+            e.preventDefault(); // stop form submission
+        }
+    });
+
+    const loginForm = document.querySelector('.signin-card form');
+    const loginUsernameField = loginForm.querySelector('input[name="username"]');
+    const loginUsernameError = loginForm.querySelector('.username-error');
+
+    loginForm.addEventListener('submit', function(e) {
+        if (/^\d/.test(loginUsernameField.value)) {
+            loginUsernameError.style.display = 'block';
+            e.preventDefault(); // stop form submission
+        } else {
+            loginUsernameError.style.display = 'none';
+        }
+    });
+
+    // Optional live input check
+    loginUsernameField.addEventListener('input', function() {
+        loginUsernameError.style.display = /^\d/.test(this.value) ? 'block' : 'none';
+    });
+
+
+    // Eye toggle for password
+    // Eye toggle for password
+document.querySelectorAll('.right-icon').forEach(icon => {
+    icon.addEventListener('click', function() {
+        const input = this.parentElement.querySelector('input');
+        if(input.type === 'password'){
+            input.type = 'text';
+            this.classList.replace('fa-eye','fa-eye-slash');
+        } else {
+            input.type = 'password';
+            this.classList.replace('fa-eye-slash','fa-eye');
+        }
+    });
+});
+
+});
+
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const alertDiv = document.querySelector('.alert');
+    if(alertDiv) {
+        document.getElementById('landing-page').style.display = 'none';
+        document.getElementById('auth-page').style.display = 'flex';
+
+        // Decide whether to show Sign Up card
+        const alertText = alertDiv.textContent || '';
+        if(alertText.includes('Sign Up')) {
+            document.getElementById('authContainer').classList.add('active');
+        } else {
+            document.getElementById('authContainer').classList.remove('active');
+        }
+
+        // Remove alert after 3 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 3000);
+    }
+});
+</script>
+
+</body>
+</html>

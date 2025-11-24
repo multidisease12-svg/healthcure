@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HealthCure - Pneumonia</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-image: url("https://images.unsplash.com/photo-1576091160550-2173fdabea36");
+      background-repeat: no-repeat;
+      background-size: cover;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
+    .navbar {
+      background-color: #111 !important;
+    }
+    .navbar-brand {
+      color: #fff !important;
+      font-weight: bold;
+    }
+    .nav-link {
+      color: #bbb !important;
+    }
+    .nav-link:hover {
+      color: #fff !important;
+    }
+    footer {
+      background-color: #111;
+      text-align: center;
+      padding: 15px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg">
+  <a class="navbar-brand" href="/">HealthCure</a>
+  <div class="ml-auto">
+    <a href="/main" class="btn btn-primary" style="background-color: #0077b6; border: none;">Back to Home</a>
+  </div>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"
+          style="background-color: #222;">
+    <span class="navbar-toggler-icon" style="color:#fff;"></span>
+  </button>
+</nav>
+
+<div class="container-fluid" style="background: url('/static/pneumonia-bg.avif') center center/cover no-repeat; min-height: 100vh; padding: 40px;">
+  <div class="row justify-content-center">
+    <div class="col-md-6" style="background-color: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
+      <h2 class="text-center mb-4">Pneumonia Detection</h2>
+      <form method="POST" action="/pneumonia" enctype="multipart/form-data">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Firstname</label>
+            <input type="text" class="form-control" name="firstname" id="firstname" placeholder="Enter your first name" value="{{ firstname or '' }}" required>
+            <small id="fname_error" style="color:red; display:none;">Only alphabets are allowed.</small>
+          </div>
+          <div class="form-group col-md-6">
+            <label>Lastname</label>
+            <input type="text" class="form-control" name="lastname" id="lastname" placeholder="Enter your last name" value="{{ lastname or '' }}" required>
+            <small id="lname_error" style="color:red; display:none;">Only alphabets are allowed.</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Phone No.</label>
+            <input type="text" class="form-control" name="phone_no" id="phone_no" placeholder="Enter 10-digit Phone Number" maxlength="10" value="{{ phone_no or '' }}" required>
+            <small id="phone_error" style="color:red; display:none;">Phone number must be exactly 10 digits.</small>
+          </div>
+          <div class="form-group col-md-6">
+            <label>Email</label>
+            <input type="email" class="form-control" name="email" id="email" placeholder="example@gmail.com" value="{{ email or '' }}"  required>
+            <small id="email_error" style="color:red; display:none;">Enter a valid email address.</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Age</label>
+            <input type="number" class="form-control" name="age" id="age" placeholder="Enter Age" min="1" max="120" value="{{ age or '' }}" required>
+            <small id="age_error" style="color:red; display:none;">Please enter a valid age between 1 and 120.</small>
+          </div>
+          <div class="form-group col-md-6">
+            <label>Gender</label>
+            <select class="form-control" name="gender" required>
+              <option value="" disabled {{ 'selected' if not gender }}>Select your gender</option>
+      <option value="Male" {{ 'selected' if gender=='Male' }}>Male</option>
+      <option value="Female" {{ 'selected' if gender=='Female' }}>Female</option>
+
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+    <label>Upload your Chest Scan</label><br>
+
+    <!-- Custom Choose File button -->
+    <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click();">
+        Choose File
+    </button><br>
+
+    <!-- Hidden file input -->
+    <input type="file" id="fileInput" name="image" accept="image/*" style="display:none;" required>
+
+    <!-- Uploaded file name -->
+    <span id="fileName" style="color: white; display: block; margin-top: 5px;">
+    {% if filename %}
+        Uploaded file: {{ filename }}
+    {% else %}
+        No file chosen
+    {% endif %}
+</span>
+
+</div>
+
+ <button type="submit" class="btn btn-success btn-block mt-4">Submit</button>
+      </form>
+
+      {% if prediction %}
+      <div class="mt-4 p-3 text-center" style="background-color: rgba(0,0,0,0.7); border-radius: 10px;">
+        <h4 style="background-color: #444; padding: 10px; margin: -20px -20px 20px -20px; border-radius: 10px 10px 0 0;">
+          Pneumonia Test Results
+        </h4>
+        <div class="row">
+          <div class="col-md-4">
+            <img src="/static/pneumonia-bg.avif" alt="Pneumonia Icon" style="max-width: 100%; height: auto;">
+          </div>
+          <div class="col-md-8 text-left">
+            <p><strong>First Name:</strong> {{ firstname }}</p>
+            <p><strong>Last Name:</strong> {{ lastname }}</p>
+            <p><strong>Age:</strong> {{ age }}</p>
+            <p><strong>Gender:</strong> {{ gender }}</p>
+            <p><strong>Result:</strong> <span style="font-weight: bold;">{{ prediction }}</span></p>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <div class="alert alert-danger mt-3" role="alert">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Validation Script -->
+<script>
+  const fnameInput = document.getElementById("firstname");
+  const lnameInput = document.getElementById("lastname");
+  const phoneInput = document.getElementById("phone_no");
+  const emailInput = document.getElementById("email");
+  const ageInput = document.getElementById("age");
+
+  const fnameError = document.getElementById("fname_error");
+  const lnameError = document.getElementById("lname_error");
+  const phoneError = document.getElementById("phone_error");
+  const emailError = document.getElementById("email_error");
+  const ageError = document.getElementById("age_error");
+
+  // Live validation
+  fnameInput.addEventListener("input", function() {
+    const filtered = this.value.replace(/[^A-Za-z]/g, '');
+    fnameError.style.display = (this.value !== filtered) ? "block" : "none";
+    this.style.borderColor = (this.value !== filtered) ? "red" : "";
+    this.value = filtered;
+  });
+
+  lnameInput.addEventListener("input", function() {
+    const filtered = this.value.replace(/[^A-Za-z]/g, '');
+    lnameError.style.display = (this.value !== filtered) ? "block" : "none";
+    this.style.borderColor = (this.value !== filtered) ? "red" : "";
+    this.value = filtered;
+  });
+
+  phoneInput.addEventListener("input", function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 10);
+    phoneError.style.display = (this.value.length !== 10) ? "block" : "none";
+    this.style.borderColor = (this.value.length !== 10) ? "red" : "";
+  });
+
+  emailInput.addEventListener("input", function() {
+    const regex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+    emailError.style.display = (!regex.test(this.value.toLowerCase())) ? "block" : "none";
+    this.style.borderColor = (!regex.test(this.value.toLowerCase())) ? "red" : "";
+  });
+
+  ageInput.addEventListener("input", function() {
+    const value = parseInt(this.value);
+    ageError.style.display = (isNaN(value) || value < 1 || value > 120) ? "block" : "none";
+    this.style.borderColor = (isNaN(value) || value < 1 || value > 120) ? "red" : "";
+  });
+
+  // Submission validation
+  const form = document.querySelector('form');
+  form.addEventListener("submit", function(event) {
+    let valid = true;
+
+    if(fnameInput.value.trim() === '' || /[^A-Za-z]/.test(fnameInput.value)) {
+      fnameError.style.display = "block"; fnameInput.style.borderColor = "red"; valid = false;
+    }
+    if(lnameInput.value.trim() === '' || /[^A-Za-z]/.test(lnameInput.value)) {
+      lnameError.style.display = "block"; lnameInput.style.borderColor = "red"; valid = false;
+    }
+    if(phoneInput.value.length !== 10) {
+      phoneError.style.display = "block"; phoneInput.style.borderColor = "red"; valid = false;
+    }
+    const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+    if(!emailRegex.test(emailInput.value.toLowerCase())) {
+      emailError.style.display = "block"; emailInput.style.borderColor = "red"; valid = false;
+    }
+    const ageValue = parseInt(ageInput.value);
+    if(isNaN(ageValue) || ageValue < 1 || ageValue > 120) {
+      ageError.style.display = "block"; ageInput.style.borderColor = "red"; valid = false;
+    }
+
+    if(!valid) event.preventDefault();
+  });
+</script>
+
+<script>
+  window.addEventListener("load", function () {
+    if (performance.navigation.type === 1) { 
+      const resultSection = document.querySelector(".mt-4.p-3.text-center");
+      if (resultSection) {
+        resultSection.style.display = "none";
+      }
+    }
+  });
+</script>
+<script>
+    const fileInput = document.getElementById('fileInput');
+const fileNameSpan = document.getElementById('fileName');
+
+fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
+        fileNameSpan.textContent = 'Uploaded file: ' + fileInput.files[0].name;
+    } else {
+        fileNameSpan.textContent = 'No file chosen';
+    }
+});
+
+</script>
+
+
+</body>
+</html>

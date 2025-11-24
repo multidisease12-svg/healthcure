@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HealthCure - Diabetes</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-image: url("https://media.post.rvohealth.io/wp-content/uploads/2020/09/doctor_glucosmeter_patient_hand-732x549-thumbnail.jpg");
+      background-repeat: no-repeat;
+      background-size: cover;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
+    .navbar {
+      background-color: #111 !important;
+    }
+    .navbar-brand {
+      color: #fff !important;
+      font-weight: bold;
+    }
+    .nav-link {
+      color: #bbb !important;
+    }
+    .nav-link:hover {
+      color: #fff !important;
+    }
+    footer {
+      background-color: #111;
+      text-align: center;
+      padding: 15px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      color: #888;
+    }
+    small.form-text {
+      color: #aad4ff !important;
+    }
+    .error-text {
+      color: #ff6b6b;
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+  <a class="navbar-brand" href="/">HealthCure</a>
+  <div class="ml-auto">
+    <a href="{{ url_for('main') }}" 
+       class="btn btn-primary"
+       style="background-color: #0077b6; border: none;">
+       Back to Home
+    </a>
+  </div>
+</nav>
+
+<!-- FORM SECTION -->
+<div class="container-fluid"
+     style="background: url('/static/images/diabetes-bg.jpg') center center/cover no-repeat; min-height: 100vh; padding: 40px;">
+  <div class="row justify-content-center">
+    <div class="col-md-6" style="background-color: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
+      <h2 class="text-center mb-4">Diabetes Detection</h2>
+
+      <form method="POST" action="/diabetes" id="diabetesForm">
+        <!-- Personal info -->
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Firstname</label>
+            <input type="text" class="form-control" name="firstname" placeholder="Enter Your First Name" value="{{ firstname or '' }}" required pattern="[A-Za-z]+" title="Only alphabets allowed">
+            <div class="error-text">⚠ Please enter only alphabets</div>
+          </div>
+          <div class="form-group col-md-6">
+            <label>Lastname</label>
+            <input type="text" class="form-control" name="lastname" placeholder="Enter Your Last Name" value="{{ lastname or '' }}" required pattern="[A-Za-z]+" title="Only alphabets allowed">
+            <div class="error-text">⚠ Please enter only alphabets</div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Phone No.</label>
+            <input type="text" class="form-control" name="phone_no" placeholder="Enter Your Mobile Number" pattern="\d{10}" maxlength="10" title="Enter a valid 10-digit number" value="{{ phone_no or '' }}" required>
+            <div class="error-text">⚠ Enter only digits (10 digits)</div>
+          </div>
+          <div class="form-group col-md-6">
+            <label>Email</label>
+            <input type="email" class="form-control" name="email" placeholder="Enter Your Email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Enter a valid email address" value="{{ email or '' }}">
+            <div class="error-text">⚠ Enter a valid email (example@mail.com)</div>
+          </div>
+        </div>
+  
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Age</label>
+            <input type="number" class="form-control" name="age" placeholder="Enter Your Age" required min="1" max="120" value="{{ age or '' }}">
+            <small class="form-text text-muted">💡 Age range: 1 – 120 years</small>
+            <div class="error-text">⚠ Age must be between 1 and 120</div>
+          </div>
+          <div class="form-group col-md-6">
+            <label>Gender</label>
+            <select class="form-control" name="gender" required>
+              <option value="" disabled {{ 'selected' if not gender }}>Select your gender</option>
+              <option value="Male" {{ 'selected' if gender=='Male' }}>Male</option>
+              <option value="Female" {{ 'selected' if gender=='Female' }}>Female</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Diabetes-specific fields -->
+        <div class="form-row">
+          <div class="form-group col-md-3">
+            <label>Hypertension</label>
+            <select class="form-control" name="hypertension" required>
+              <option value="" disabled {{ 'selected' if not hypertension }}>Select</option>
+              <option value="0" {{ 'selected' if hypertension=='0' }}>No</option>
+              <option value="1" {{ 'selected' if hypertension=='1' }}>Yes</option>
+            </select>
+          </div>
+          <div class="form-group col-md-3">
+            <label>Heart Disease</label>
+            <select class="form-control" name="heart_disease" required>
+              <option value="" disabled {{ 'selected' if not heart_disease }}>Select</option>
+              <option value="0" {{ 'selected' if heart_disease=='0' }}>No</option>
+              <option value="1" {{ 'selected' if heart_disease=='1' }}>Yes</option>
+            </select>
+          </div>
+          <div class="form-group col-md-3">
+            <label>BMI</label>
+            <input type="number" step="0.1" class="form-control" name="bmi" placeholder="Enter BMI (10.0 – 60.0)" min="10.0" max="60.0" value="{{ bmi or '' }}" required>
+            <small class="form-text text-muted">💡 BMI range: 10.0 – 60.0</small>
+            <div class="error-text">⚠ Value must be between 10 and 60</div>
+          </div>
+          <div class="form-group col-md-3">
+            <label>HbA1c Level</label>
+            <input type="number" step="0.1" class="form-control" name="hbA1c_level" placeholder="Enter HbA1c Level (4.0 – 15.0%)" min="4.0" max="15.0"  value="{{ hbA1c_level or '' }}" required>
+            <small class="form-text text-muted">💡 HbA1c Level range: 4.0 – 15.0%</small>
+            <div class="error-text">⚠ Value must be between 4.0 and 15.0</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Blood Glucose Level</label>
+          <input type="number" class="form-control" name="glucose_level" placeholder="Enter Blood Glucose Level (50 – 600 mg/dL)" min="50" max="600" value="{{ glucose_level or '' }}" required>
+          <small class="form-text text-muted">💡 Blood Glucose Level range: 50 – 600 mg/dL</small>
+          <div class="error-text">⚠ Value must be between 50 and 600</div>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-block mt-4">Submit</button>
+      </form>
+
+      <!-- Prediction Display -->
+      {% if prediction %}
+      <div class="mt-4 p-3 text-center" style="background-color: rgba(0,0,0,0.7); border-radius: 10px;">
+        <h4 style="background-color: #444; padding: 10px; margin: -20px -20px 20px -20px; border-radius: 10px 10px 0 0;">
+          Diabetes Disease Test Results
+        </h4>
+        <div class="row">
+          <div class="col-md-4">
+            <img src="/static/diabetes-icon.jpg" style="max-width: 100%; height: auto;">
+          </div>
+          <div class="col-md-8 text-left">
+            <p><strong>First Name:</strong> {{ firstname }}</p>
+            <p><strong>Last Name:</strong> {{ lastname }}</p>
+            <p><strong>Age:</strong> {{ age }}</p>
+            <p><strong>Gender:</strong> {{ gender }}</p>
+            <p><strong>Result:</strong> <span style="font-weight: bold;">{{ prediction }}</span></p>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Real-time validation -->
+<script>
+document.querySelectorAll('input').forEach(input => {
+  const errorMsg = input.parentElement.querySelector('.error-text');
+  
+  input.addEventListener('input', () => {
+    let valid = true;
+    const val = input.value.trim();
+    const name = input.name;
+
+    if (name === 'firstname' || name === 'lastname') {
+      input.value = val.replace(/[^A-Za-z]/g, '');
+      valid = /^[A-Za-z]+$/.test(input.value);
+    } 
+    else if (name === 'email') {
+      input.value = val.replace(/[^a-z0-9@._%+-]/gi, '');
+      valid = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(input.value);
+    }
+    else if (name === 'phone_no') {
+      input.value = val.replace(/\D/g, '');
+      valid = /^\d{0,10}$/.test(input.value);
+    } 
+    else if (input.type === 'number') {
+      const min = parseFloat(input.min);
+      const max = parseFloat(input.max);
+      const numVal = parseFloat(val);
+      if (!isNaN(numVal)) valid = numVal >= min && numVal <= max;
+    }
+
+    if (errorMsg) errorMsg.style.display = valid ? 'none' : 'block';
+  });
+});
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  window.addEventListener("load", function () {
+    if (performance.navigation.type === 1) { 
+      const resultSection = document.querySelector(".mt-4.p-3.text-center");
+      if (resultSection) {
+        resultSection.style.display = "none";
+      }
+    }
+  });
+</script>
+</body>
+</html>
